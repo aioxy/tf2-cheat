@@ -18,6 +18,7 @@ DECL_HOOK(Paint);
 DECL_HOOK(PaintTraverse);
 DECL_HOOK(DrawModelExecute);
 DECL_HOOK(RunCommand);
+DECL_HOOK(GetMaxItemCount);
 DECL_HOOK(GetUserCmd);
 
 SwapWindow_t ho_SwapWindow = NULL;
@@ -34,6 +35,7 @@ bool hooks_init(void) {
     VMT_HOOK(i_panel, PaintTraverse);
     VMT_HOOK(i_modelrender, DrawModelExecute);
     VMT_HOOK(i_prediction, RunCommand);
+    VMT_HOOK(i_player_inventory, GetMaxItemCount);
     VMT_HOOK(i_input, GetUserCmd);
 
     HOOK_SDL(SwapWindow);
@@ -259,6 +261,12 @@ void h_DrawModelExecute(ModelRender* thisptr, const DrawModelState_t* state,
 
     /* Reset to defaut materials */
     METHOD_ARGS(i_modelrender, ForcedMaterialOverride, NULL, OVERRIDE_NORMAL);
+}
+
+/*----------------------------------------------------------------------------*/
+
+int h_GetMaxItemCount([[maybe_unused]] CTFPlayerInventory* thisptr) {
+    return 3000;
 }
 
 /*----------------------------------------------------------------------------*/

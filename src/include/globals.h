@@ -47,6 +47,13 @@
     "8B 45 08 F3 0F 11 80 ? ? ? ? 8B 45 0C 89 04 24 E8 ? ? ? ? 25 ? ? ? ? 89 " \
     "43 34 E8 ? ? ? ?"
 
+/* CEquipSlotItemSelectionPanel::UpdateModelPanelsForSelection
+ *     -> TFInventoryManager (&GetLocalTFInventory)
+ * There are actually two matches for this but they both work. */
+#define SIG_TFInventoryManager \
+    "E8 ? ? ? ? 89 ? ? 8D ? ? 89 ? ? ? ? ? 8D ? ? 89 ? ? ? ? ? E8 ? ? ? ? 8B " \
+    "? 89 ? ? 8D ? ? 89 ? ? ? ? ? 8D ? ? 89 ? ? ? ? ? FF ? 28"
+
 /* CTargetID::GetTargetForSteamAvatar -> IsPlayerOnSteamFriendsList */
 #define SIG_IsPlayerOnSteamFriendsList                                         \
     "55 89 E5 56 53 81 EC ? ? ? ? 65 A1 ? ? ? ? 89 45 F4 31 C0 8B 5D 0C E8 ? " \
@@ -190,6 +197,11 @@ extern SetPredictionRandomSeed_t SetPredictionRandomSeed;
 typedef int (*MD5_PseudoRandom_t)(int);
 extern MD5_PseudoRandom_t MD5_PseudoRandom;
 
+typedef CTFInventoryManager* (*TFInventoryManager_t)(void);
+extern TFInventoryManager_t TFInventoryManager;
+typedef CTFPlayerInventory* (*GetLocalTFInventory_t)(CTFInventoryManager*);
+extern GetLocalTFInventory_t GetLocalTFInventory;
+
 typedef bool (*IsPlayerOnSteamFriendsList_t)(Entity*, Entity*);
 extern IsPlayerOnSteamFriendsList_t IsPlayerOnSteamFriendsList;
 
@@ -211,6 +223,7 @@ DECL_INTF_EXTERN(ModelRender, modelrender);
 DECL_INTF_EXTERN(GameMovement, gamemovement);
 DECL_INTF_EXTERN(MoveHelper, movehelper);
 DECL_INTF_EXTERN(IPrediction, prediction);
+DECL_INTF_EXTERN(CTFPlayerInventory, player_inventory);
 DECL_INTF_EXTERN(CInput, input);
 DECL_INTF_EXTERN(ClientMode, clientmode);
 DECL_CLASS_EXTERN(CGlobalVars, globalvars);

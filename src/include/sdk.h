@@ -265,6 +265,8 @@ typedef struct {
 #include "sdk/entity.h"
 #include "sdk/weapon.h"
 #include "sdk/convar.h"
+#include "sdk/inventory_manager.h"
+#include "sdk/player_inventory.h"
 
 /*----------------------------------------------------------------------------*/
 /* Interfaces */

@@ -44,6 +44,8 @@ StartDrawing_t StartDrawing                             = NULL;
 FinishDrawing_t FinishDrawing                           = NULL;
 SetPredictionRandomSeed_t SetPredictionRandomSeed       = NULL;
 MD5_PseudoRandom_t MD5_PseudoRandom                     = NULL;
+TFInventoryManager_t TFInventoryManager                 = NULL;
+GetLocalTFInventory_t GetLocalTFInventory               = NULL;
 IsPlayerOnSteamFriendsList_t IsPlayerOnSteamFriendsList = NULL;
 
 /* SDL functions */
@@ -67,6 +69,7 @@ DECL_INTF(ModelRender, modelrender);
 DECL_INTF(GameMovement, gamemovement);
 DECL_INTF(MoveHelper, movehelper);
 DECL_INTF(IPrediction, prediction);
+DECL_INTF(CTFPlayerInventory, player_inventory);
 DECL_INTF(CInput, input);
 DECL_INTF(ClientMode, clientmode);
 DECL_CLASS(CClientState, clientstate);
@@ -139,6 +142,11 @@ static inline bool get_sigs(void) {
     GET_SIGNATURE(pat_MD5_PseudoRandom, CLIENT_SO, SIG_MD5_PseudoRandom);
     MD5_PseudoRandom = RELATIVE2ABSOLUTE(pat_MD5_PseudoRandom + 18);
 
+    GET_SIGNATURE(pat_TFInventoryManager, CLIENT_SO, SIG_TFInventoryManager);
+    TFInventoryManager = RELATIVE2ABSOLUTE(pat_TFInventoryManager + 1); 
+    /* It's in the sig. */
+    GetLocalTFInventory = RELATIVE2ABSOLUTE(pat_TFInventoryManager + 27);
+
     /* IsPlayerOnSteamFriendsList()
      * NOTE: We don't use RELATIVE2ABSOLUTE() and we don't add any offset since
      * this is the signature to the function itself. */
@@ -150,6 +158,11 @@ static inline bool get_sigs(void) {
 }
 
 bool globals_init(void) {
+    /* Individual functions/globals from signatures.
+     * Hooks depend on sigs but sigs don't depend on anything. */
+    if (!get_sigs())
+        return false;
+
     /* Handlers */
     GET_HANDLER(h_client, CLIENT_SO);
     GET_HANDLER(h_engine, ENGINE_SO);
@@ -198,6 +211,8 @@ bool globals_init(void) {
         return false;
     }
 
+    i_player_inventory = GetLocalTFInventory(TFInventoryManager());
+
     /* Needed for write permission on the VMTs. Macro declared in globals.h */
     CLONE_VMT(BaseClient, i_baseclient);
     CLONE_VMT(ClientMode, i_clientmode);
@@ -205,6 +220,7 @@ bool globals_init(void) {
     CLONE_VMT(IPanel, i_panel);
     CLONE_VMT(ModelRender, i_modelrender);
     CLONE_VMT(IPrediction, i_prediction);
+    CLONE_VMT(CTFPlayerInventory, i_player_inventory);
     CLONE_VMT(CInput, i_input);
 
     dlclose(h_client);
@@ -213,10 +229,6 @@ bool globals_init(void) {
     dlclose(h_vgui);
     dlclose(h_materialsystem);
     dlclose(h_sdl2);
-
-    /* Individual functions/globals from signatures */
-    if (!get_sigs())
-        return false;
 
     /* Initialize global cache */
     cache_reset();
@@ -239,6 +251,7 @@ bool resore_vtables(void) {
     RESTORE_VMT(IPanel, i_panel);
     RESTORE_VMT(ModelRender, i_modelrender);
     RESTORE_VMT(IPrediction, i_prediction);
+    RESTORE_VMT(CTFPlayerInventory, i_player_inventory);
 
     return true;
 }
