@@ -50,6 +50,7 @@ The cheat currently has the following features:
     - Custom smoothing
     - Custom time before switching targets
 - Misc
+  - Backpack expander
   - BunnyHop
   - Autostrafe
     - Legit
